@@ -3,6 +3,10 @@
  * Then define trigger to run ProcessInvites in intervals
  */
 var doEmail = false;
+// Don't accept meetings before this hour. 10 = 10am.
+const workStartHour = 10;
+// Don't accept meetings that go past this hour. 18 = 6pm.
+const workEndHour = 18;
 /**
  * Workaround to [Issue 5323](https://code.google.com/p/google-apps-script-issues/issues/detail?id=5323)
  * statusFilters parameter is not working; returns 0 events.
@@ -34,13 +38,13 @@ function inviteEventFilters(invite) {
   if (invite.getStartTime().getDay() >= 6 || invite.getStartTime().getDay() == 0) {
     return false
   }
-  if (invite.getStartTime().getHours() < 10 || invite.getStartTime().getHours() > 18) {
+  if (invite.getStartTime().getHours() < workStartHour || invite.getStartTime().getHours() > workEndHour) {
     return false
   }
-  if (invite.getStartTime().getHours() == 18 && invite.getStartTime().getMinutes() > 0) {
+  if (invite.getStartTime().getHours() == workEndHour && invite.getStartTime().getMinutes() > 0) {
     return false
   }
-  if (invite.getEndTime().getHours() >= 18) {
+  if (invite.getEndTime().getHours() >= workEndHour) {
     return false
   }
   return true
